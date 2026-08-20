@@ -1,0 +1,12 @@
+app = "sofexpo-b2b-bot"
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  DB_PATH = "/data/sofexpo_b2b.db"
+
+[[mounts]]
+  source = "sofexpo_data"
+  destination = "/data"
