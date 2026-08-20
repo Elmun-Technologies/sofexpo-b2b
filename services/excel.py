@@ -11,10 +11,10 @@ def generate_excel_report(registrations: list) -> BufferedInputFile:
 
     # Sarlavhalar
     headers = [
-        "ID", "Telegram ID", "Username", "Ism va Familiya", "Lavozim",
+        "ID", "Telegram ID", "Username", "Til", "Ism va Familiya", "Lavozim",
         "Kompaniya nomi", "Faoliyat sohasi", "Mamlakat", "Shahar",
         "Telefon raqami", "Email", "Kelish kuni", "Tashrif maqsadi",
-        "Qo'shimcha izoh", "Ro'yxatdan o mevaqti"
+        "Qo'shimcha izoh", "Ro'yxatdan o'tgan vaqti"
     ]
 
     # Sarlavha stili
@@ -45,6 +45,7 @@ def generate_excel_report(registrations: list) -> BufferedInputFile:
             item.get("id"),
             item.get("telegram_id"),
             f"@{item.get('username')}" if item.get("username") else "",
+            item.get("language", "uz"),
             item.get("full_name"),
             item.get("position"),
             item.get("company"),
@@ -64,7 +65,7 @@ def generate_excel_report(registrations: list) -> BufferedInputFile:
         for col_idx in range(1, len(row_data) + 1):
             cell = ws.cell(row=row_idx, column=col_idx)
             cell.border = thin_border
-            if col_idx in [1, 2, 8, 9, 10, 12, 15]:
+            if col_idx in [1, 2, 4, 9, 10, 11, 13, 16]:
                 cell.alignment = align_center
             else:
                 cell.alignment = align_left

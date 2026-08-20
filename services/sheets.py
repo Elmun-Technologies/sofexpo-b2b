@@ -21,7 +21,7 @@ async def append_to_google_sheet(data: dict):
         existing = worksheet.get_all_values()
         if not existing:
             headers = [
-                "Vaqt", "Telegram ID", "Username", "Ism va Familiya",
+                "Vaqt", "Telegram ID", "Username", "Til", "Ism va Familiya",
                 "Lavozim", "Kompaniya", "Faoliyat sohasi", "Mamlakat",
                 "Shahar", "Telefon", "Email", "Kelish kuni",
                 "Tashrif maqsadi", "Qo'shimcha izoh"
@@ -32,6 +32,7 @@ async def append_to_google_sheet(data: dict):
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             data.get("telegram_id"),
             f"@{data.get('username')}" if data.get("username") else "",
+            data.get("language", "uz"),
             data.get("full_name"),
             data.get("position"),
             data.get("company"),

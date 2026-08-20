@@ -1,67 +1,77 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from utils.translations import (
+    BTN_UZ, BTN_RU, BTN_EN,
+    COUNTRIES, VISIT_DAYS, VISIT_PURPOSES,
+    get_text
+)
 
-REGISTER_TEXT = "📝 Ro'yxatdan o'tish"
-INFO_TEXT = "ℹ️ Ko'rgazma haqida"
-SKIP_TEXT = "⏭ O'tkazib yuborish"
-CANCEL_TEXT = "❌ Bekor qilish"
-
-def get_start_keyboard() -> ReplyKeyboardMarkup:
-    """Boshlang'ich marketing tugmalari."""
+def get_language_keyboard() -> ReplyKeyboardMarkup:
+    """Tilni tanlash tugmalari."""
     keyboard = [
-        [KeyboardButton(text=REGISTER_TEXT)],
-        [KeyboardButton(text=INFO_TEXT)]
+        [KeyboardButton(text=BTN_UZ), KeyboardButton(text=BTN_RU), KeyboardButton(text=BTN_EN)]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
-def get_contact_keyboard() -> ReplyKeyboardMarkup:
+def get_start_keyboard(lang: str = "uz") -> ReplyKeyboardMarkup:
+    """Boshlang'ich marketing va menyu tugmalari."""
+    keyboard = [
+        [KeyboardButton(text=get_text("btn_register", lang))],
+        [KeyboardButton(text=get_text("btn_info", lang)), KeyboardButton(text=get_text("btn_change_lang", lang))]
+    ]
+    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+
+def get_contact_keyboard(lang: str = "uz") -> ReplyKeyboardMarkup:
     """Telefon raqamni ulashish tugmasi."""
     keyboard = [
-        [KeyboardButton(text="📱 Telefon raqamni ulashish", request_contact=True)],
-        [KeyboardButton(text=CANCEL_TEXT)]
+        [KeyboardButton(text=get_text("btn_share_contact", lang), request_contact=True)],
+        [KeyboardButton(text=get_text("btn_cancel", lang))]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True, one_time_keyboard=True)
 
-def get_country_keyboard() -> ReplyKeyboardMarkup:
+def get_country_keyboard(lang: str = "uz") -> ReplyKeyboardMarkup:
     """Mamlakatni tanlash tugmalari."""
+    c_list = COUNTRIES.get(lang, COUNTRIES["uz"])
     keyboard = [
-        [KeyboardButton(text="O'zbekiston"), KeyboardButton(text="Qozog'iston")],
-        [KeyboardButton(text="Qirg'iziston"), KeyboardButton(text="Tojikiston")],
-        [KeyboardButton(text="Rossiya"), KeyboardButton(text="Turkiya")],
-        [KeyboardButton(text="Boshqa mamlakat")],
-        [KeyboardButton(text=CANCEL_TEXT)]
+        [KeyboardButton(text=c_list[0]), KeyboardButton(text=c_list[1])],
+        [KeyboardButton(text=c_list[2]), KeyboardButton(text=c_list[3])],
+        [KeyboardButton(text=c_list[4]), KeyboardButton(text=c_list[5])],
+        [KeyboardButton(text=c_list[6])],
+        [KeyboardButton(text=get_text("btn_cancel", lang))]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
-def get_visit_days_keyboard() -> ReplyKeyboardMarkup:
+def get_visit_days_keyboard(lang: str = "uz") -> ReplyKeyboardMarkup:
     """Ko'rgazmaga kelish kuni tugmalari."""
+    d_list = VISIT_DAYS.get(lang, VISIT_DAYS["uz"])
     keyboard = [
-        [KeyboardButton(text="1-kun"), KeyboardButton(text="2-kun")],
-        [KeyboardButton(text="3-kun"), KeyboardButton(text="Barcha kunlar")],
-        [KeyboardButton(text=CANCEL_TEXT)]
+        [KeyboardButton(text=d_list[0]), KeyboardButton(text=d_list[1])],
+        [KeyboardButton(text=d_list[2]), KeyboardButton(text=d_list[3])],
+        [KeyboardButton(text=get_text("btn_cancel", lang))]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
-def get_visit_purpose_keyboard() -> ReplyKeyboardMarkup:
+def get_visit_purpose_keyboard(lang: str = "uz") -> ReplyKeyboardMarkup:
     """Tashrif maqsadi tugmalari."""
+    p_list = VISIT_PURPOSES.get(lang, VISIT_PURPOSES["uz"])
     keyboard = [
-        [KeyboardButton(text="🤝 Hamkor topish"), KeyboardButton(text="📈 Mijoz topish")],
-        [KeyboardButton(text="📦 Mahsulotlar va xizmatlar bilan tanishish")],
-        [KeyboardButton(text="🌐 Tajriba almashish"), KeyboardButton(text="Boshqa")],
-        [KeyboardButton(text=CANCEL_TEXT)]
+        [KeyboardButton(text=p_list[0]), KeyboardButton(text=p_list[1])],
+        [KeyboardButton(text=p_list[2])],
+        [KeyboardButton(text=p_list[3]), KeyboardButton(text=p_list[4])],
+        [KeyboardButton(text=get_text("btn_cancel", lang))]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
-def get_skip_keyboard() -> ReplyKeyboardMarkup:
+def get_skip_keyboard(lang: str = "uz") -> ReplyKeyboardMarkup:
     """Ixtiyoriy bosqichlarni o'tkazib yuborish tugmasi."""
     keyboard = [
-        [KeyboardButton(text=SKIP_TEXT)],
-        [KeyboardButton(text=CANCEL_TEXT)]
+        [KeyboardButton(text=get_text("btn_skip", lang))],
+        [KeyboardButton(text=get_text("btn_cancel", lang))]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
-def get_cancel_keyboard() -> ReplyKeyboardMarkup:
+def get_cancel_keyboard(lang: str = "uz") -> ReplyKeyboardMarkup:
     """Faqat bekor qilish tugmasi."""
     keyboard = [
-        [KeyboardButton(text=CANCEL_TEXT)]
+        [KeyboardButton(text=get_text("btn_cancel", lang))]
     ]
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
