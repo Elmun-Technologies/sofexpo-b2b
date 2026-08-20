@@ -6,12 +6,15 @@ from aiogram.fsm.context import FSMContext
 
 from states.registration import RegistrationState
 from keyboards.reply import (
+    get_start_keyboard,
     get_contact_keyboard,
     get_country_keyboard,
     get_visit_days_keyboard,
     get_visit_purpose_keyboard,
     get_skip_keyboard,
     get_cancel_keyboard,
+    REGISTER_TEXT,
+    INFO_TEXT,
     SKIP_TEXT,
     CANCEL_TEXT
 )
@@ -27,28 +30,52 @@ user_router = Router()
 async def cancel_handler(message: Message, state: FSMContext):
     """Anketani bekor qilish handleri."""
     current_state = await state.get_state()
-    if current_state is None:
-        await message.answer("Sizda faol ro'yxatdan o'tish bosqichi yo'q.", reply_markup=ReplyKeyboardRemove())
-        return
-
     await state.clear()
     await message.answer(
-        "Ro'yxatdan o'tish bekor qilindi. Qayta boshlash uchun /start bosing.",
-        reply_markup=ReplyKeyboardRemove()
+        "Ro'yxatdan o'tish bekor qilindi.\nQayta ro'yxatdan o'tish uchun **'📝 Ro'yxatdan o'tish'** tugmasini bosing.",
+        parse_mode="Markdown",
+        reply_markup=get_start_keyboard()
     )
 
 @user_router.message(CommandStart())
 async def start_handler(message: Message, state: FSMContext):
-    """Botni boshlash va birinchi savolni berish."""
+    """Botni boshlash - Jalb qiluvchi marketing xabari."""
+    await state.clear()
+    
+    welcome_text = (
+        "🏢 **SOF EXPO SAMARKAND — Xalqaro B2B Ko'rgazmasi!** 👋\n\n"
+        "Samarqand shahridagi eng yirik **SOF EXPO B2B** ko'rgazmasining rasmiy botiga xush kelibsiz.\n\n"
+        "Ko'rgazmada 100+ mahalliy va xalqaro kompaniyalar, yangi biznes imkoniyatlari hamda samarali hamkorliklar sizni kutmoqda!\n\n"
+        "💡 **Nega ro'yxatdan o'tish kerak?**\n"
+        "🔹 Yangi biznes hamkorlar va mijozlar topish\n"
+        "🔹 Sohadagi eng so'nggi va innovatsion takliflar bilan tanishish\n"
+        "🔹 Ko'rgazmaga navbatsiz va **bepul** kirish\n\n"
+        "👇 Ro'yxatdan o'tish uchun quyidagi **'📝 Ro'yxatdan o'tish'** tugmasini bosing:"
+    )
+    await message.answer(welcome_text, parse_mode="Markdown", reply_markup=get_start_keyboard())
+
+@user_router.message(F.text == INFO_TEXT)
+async def info_handler(message: Message):
+    """Ko'rgazma haqida ma'lumot."""
+    info_text = (
+        "ℹ️ **SOF EXPO SAMARKAND B2B Ko'rgazmasi haqida**\n\n"
+        "📍 **Joylashuv:** Samarqand shahri, SOF EXPO ko'rgazmalar majmuasi\n"
+        "🎯 **Maqsad:** Mahalliy va xalqaro tadbirkorlar o'rtasida B2B aloqalarni rivojlantirish hamda yangi shartnomalar tuzish.\n\n"
+        "Qatnashish mutlaqo **bepul**! O'z biznesingizni rivojlantirish uchun hoziroq ro'yxatdan o'ting. 👇"
+    )
+    await message.answer(info_text, parse_mode="Markdown", reply_markup=get_start_keyboard())
+
+@user_router.message(F.text == REGISTER_TEXT)
+async def start_registration_handler(message: Message, state: FSMContext):
+    """Ro'yxatdan o'tish anketasini boshlash."""
     await state.clear()
     await state.set_state(RegistrationState.full_name)
     
-    welcome_text = (
-        "Assalomu alaykum! **SOF EXPO SAMARKAND** B2B ko'rgazmasining rasmiy botiga xush kelibsiz.\n\n"
-        "Ko'rgazmaga tashrif buyurish uchun qisqa ro'yxatdan o'tish anketasini to'ldiring.\n\n"
-        "**1-savol:** Ismingiz va familiyangizni kiritsangiz (Masalan: Alisher Navoiy):"
+    first_question = (
+        "Ajoyib! Anketa savollarini to'ldiramiz. ✨\n\n"
+        "**1-savol:** Ismingiz va familiyangizni kiriting (Masalan: Alisher Navoiy):"
     )
-    await message.answer(welcome_text, parse_mode="Markdown", reply_markup=get_cancel_keyboard())
+    await message.answer(first_question, parse_mode="Markdown", reply_markup=get_cancel_keyboard())
 
 # 1. Full name
 @user_router.message(RegistrationState.full_name)
@@ -238,7 +265,7 @@ async def process_comment(message: Message, state: FSMContext):
         "SOF EXPO SAMARKAND B2B ko'rgazmasida sizni kutib qolamiz.\n"
         "Tashrifingiz uchun tashakkur!"
     )
-    await message.answer(success_text, parse_mode="Markdown", reply_markup=ReplyKeyboardRemove())
+    await message.answer(success_text, parse_mode="Markdown", reply_markup=get_start_keyboard())
 
     # Adminlarga bildirishnoma yuborish
     comment_text = data.get('comment') or "Yo'q"

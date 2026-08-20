@@ -1,7 +1,17 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
+REGISTER_TEXT = "📝 Ro'yxatdan o'tish"
+INFO_TEXT = "ℹ️ Ko'rgazma haqida"
 SKIP_TEXT = "⏭ O'tkazib yuborish"
 CANCEL_TEXT = "❌ Bekor qilish"
+
+def get_start_keyboard() -> ReplyKeyboardMarkup:
+    """Boshlang'ich marketing tugmalari."""
+    keyboard = [
+        [KeyboardButton(text=REGISTER_TEXT)],
+        [KeyboardButton(text=INFO_TEXT)]
+    ]
+    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
 def get_contact_keyboard() -> ReplyKeyboardMarkup:
     """Telefon raqamni ulashish tugmasi."""
