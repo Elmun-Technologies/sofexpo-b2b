@@ -1,3 +1,5 @@
+# fly.toml app configuration file generated for sofexpo-b2b on 2026-08-20T10:57:23Z
+
 app = "sofexpo-b2b"
 primary_region = "fra"
 
@@ -8,13 +10,19 @@ primary_region = "fra"
   DB_PATH = "/data/sofexpo_b2b.db"
   PORT = "8080"
 
+[[mounts]]
+  source = "sofexpo_data"
+  destination = "/data"
+
 [http_service]
   internal_port = 8080
   force_https = true
   auto_stop_machines = false
   auto_start_machines = true
   min_machines_running = 1
+  processes = ["app"]
 
-[[mounts]]
-  source = "sofexpo_data"
-  destination = "/data"
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
