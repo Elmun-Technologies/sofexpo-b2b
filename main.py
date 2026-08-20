@@ -6,6 +6,7 @@ import sys
 from aiohttp import web
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.exceptions import TelegramNetworkError, TelegramAPIError
 
 from config import BOT_TOKEN
 from database.db import init_db
@@ -57,15 +58,20 @@ async def main():
     dp.include_router(admin_router)
     dp.include_router(user_router)
 
-    logger.info("Bot muvaffaqiyatli ishga tushdi...")
-    
-    # Eskirgan webhook va yangilanishlarni o'chirish
-    await bot.delete_webhook(drop_pending_updates=True)
-    
-    try:
-        await dp.start_polling(bot)
-    finally:
-        await bot.session.close()
+    logger.info("Bot muvaffaqiyatli ishga tushmoqda...")
+
+    while True:
+        try:
+            # Eskirgan webhook va pending updates ni tozalash
+            await bot.delete_webhook(drop_pending_updates=True)
+            logger.info("Polling boshlandi.")
+            await dp.start_polling(bot, handle_signals=False)
+        except (TelegramNetworkError, TelegramAPIError) as e:
+            logger.error(f"Telegram API xatoligi: {e}. 5 sekunddan so'ng qayta ulaniladi...")
+            await asyncio.sleep(5)
+        except Exception as e:
+            logger.error(f"Kutilmagan bot xatosi: {e}. 5 sekunddan so'ng qayta ishga tushiriladi...")
+            await asyncio.sleep(5)
 
 if __name__ == "__main__":
     try:
