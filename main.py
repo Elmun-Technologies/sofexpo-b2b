@@ -6,6 +6,7 @@ import sys
 from aiohttp import web
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import BotCommand, BotCommandScopeDefault
 from aiogram.exceptions import TelegramNetworkError, TelegramAPIError
 
 from config import BOT_TOKEN
@@ -36,6 +37,21 @@ async def start_web_server():
     await site.start()
     logger.info(f"Health check HTTP server {port}-portda ishga tushdi.")
 
+async def setup_bot_commands(bot: Bot):
+    """Telegram tugmasida buyruqlar menyusini (Bot Commands) o'rnatish."""
+    commands = [
+        BotCommand(command="start", description="🔄 Botni ishga tushirish / Перезапустить / Restart"),
+        BotCommand(command="cancel", description="❌ Anketani bekor qilish / Отмена / Cancel"),
+        BotCommand(command="stats", description="📊 Statistika va analitika (Admin & Group)"),
+        BotCommand(command="excel", description="📥 Excel bazasini yuklab olish (.xlsx)"),
+        BotCommand(command="help", description="ℹ️ Admin yordam menyusi")
+    ]
+    try:
+        await bot.set_my_commands(commands, scope=BotCommandScopeDefault())
+        logger.info("Bot buyruqlar menyusi (set_my_commands) muvaffaqiyatli o'rnatildi.")
+    except Exception as e:
+        logger.error(f"Bot buyruqlarini o'rnatishda xatolik: {e}")
+
 async def main():
     # Ma'lumotlar bazasini initsializatsiya qilish
     await init_db()
@@ -57,6 +73,9 @@ async def main():
     # Routerlarni ulash (Admin va User)
     dp.include_router(admin_router)
     dp.include_router(user_router)
+
+    # Telegram menyu buyruqlarini o'rnatish
+    await setup_bot_commands(bot)
 
     logger.info("Bot muvaffaqiyatli ishga tushmoqda...")
 
