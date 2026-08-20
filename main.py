@@ -36,10 +36,6 @@ async def start_web_server():
     logger.info(f"Health check HTTP server {port}-portda ishga tushdi.")
 
 async def main():
-    if not BOT_TOKEN or BOT_TOKEN == "YOUR_BOT_TOKEN_HERE":
-        logger.error("BOT_TOKEN sozlanmagan! Iltimos environment variable yoki .env faylida BOT_TOKEN ni ko'rsating.")
-        return
-
     # Ma'lumotlar bazasini initsializatsiya qilish
     await init_db()
 
@@ -48,6 +44,11 @@ async def main():
         await start_web_server()
     except Exception as e:
         logger.warning(f"Web serverni ishga tushirishda ogohlantirish: {e}")
+
+    if not BOT_TOKEN or BOT_TOKEN == "YOUR_BOT_TOKEN_HERE":
+        logger.error("BOT_TOKEN sozlanmagan! Iltimos Fly.io secrets da BOT_TOKEN ni o'rnating (`fly secrets set BOT_TOKEN=...`).")
+        while True:
+            await asyncio.sleep(3600)
 
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher(storage=MemoryStorage())

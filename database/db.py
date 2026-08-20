@@ -62,22 +62,40 @@ async def get_stats() -> dict:
         async with db.execute("SELECT COUNT(*) FROM registrations") as cursor:
             total_count = (await cursor.fetchone())[0]
 
+        async with db.execute("SELECT COUNT(*) FROM registrations WHERE DATE(created_at) = DATE('now')") as cursor:
+            today_count = (await cursor.fetchone())[0]
+
+        # Faoliyat sohasi (kategoriya) bo'yicha guruhlash
+        async with db.execute(
+            "SELECT industry, COUNT(*) FROM registrations GROUP BY industry ORDER BY COUNT(*) DESC"
+        ) as cursor:
+            by_industry = await cursor.fetchall()
+
         # Kelish kunlari bo'yicha guruhlash
         async with db.execute(
-            "SELECT visit_day, COUNT(*) FROM registrations GROUP BY visit_day"
+            "SELECT visit_day, COUNT(*) FROM registrations GROUP BY visit_day ORDER BY COUNT(*) DESC"
         ) as cursor:
             by_day = await cursor.fetchall()
 
         # Tashrif maqsadi bo'yicha guruhlash
         async with db.execute(
-            "SELECT visit_purpose, COUNT(*) FROM registrations GROUP BY visit_purpose"
+            "SELECT visit_purpose, COUNT(*) FROM registrations GROUP BY visit_purpose ORDER BY COUNT(*) DESC"
         ) as cursor:
             by_purpose = await cursor.fetchall()
 
+        # Mamlakatlar bo'yicha guruhlash
+        async with db.execute(
+            "SELECT country, COUNT(*) FROM registrations GROUP BY country ORDER BY COUNT(*) DESC"
+        ) as cursor:
+            by_country = await cursor.fetchall()
+
         return {
             "total": total_count,
+            "today": today_count,
+            "by_industry": dict(by_industry),
             "by_day": dict(by_day),
-            "by_purpose": dict(by_purpose)
+            "by_purpose": dict(by_purpose),
+            "by_country": dict(by_country)
         }
 
 async def get_all_registrations() -> list:
